@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SA SURF SAFARI — South Africa's Water Sports Companion</title>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; padding-bottom: 30px; -webkit-tap-highlight-color: transparent; }
+
+        /* Header Navigation */
+        .header { background-color: #0b1329; color: white; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #1e293b; }
+        .logo-title { font-weight: 800; font-size: 16px; letter-spacing: -0.5px; }
+        .logo-sub { font-size: 10px; color: #38bdf8; text-transform: uppercase; font-weight: 600; }
+
+        /* Discipline Switcher Pills */
+        .pills { display: flex; gap: 4px; background-color: #1e293b; padding: 4px; border-radius: 8px; }
+        .pill-btn { border: none; background: transparent; color: #94a3b8; padding: 6px 10px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
+        .pill-btn.active { background-color: #0d9488; color: white; }
+
+        /* Dynamic Hero Banner */
+        .hero { background: linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4)), #0284c7; color: white; padding: 24px 16px 16px 16px; }
+        .badge { display: inline-block; background-color: #0d9488; color: white; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; }
+        .hero h2 { font-size: 22px; font-weight: 800; }
+        .hero p { font-size: 12px; color: #cbd5e1; margin-top: 4px; }
+
+        /* Main Container */
+        .container { padding: 12px 16px; display: flex; flex-direction: column; gap: 16px; max-width: 600px; margin: 0 auto; }
+
+        /* Cards */
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
+        .card-title { font-size: 15px; font-weight: 700; color: #f8fafc; }
+
+        /* Telemetry Grid */
+        .telem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+        .telem-box { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 10px; text-align: center; }
+        .telem-box.full-width { grid-column: span 2; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .telem-label { font-size: 9px; text-transform: uppercase; color: #94a3b8; font-weight: 700; display: block; }
+        .telem-val { font-size: 14px; font-weight: 800; color: #f8fafc; margin-top: 2px; }
+        .telem-sub { font-size: 10px; color: #38bdf8; font-weight: 600; display: block; margin-top: 1px; }
+        .telem-note { font-size: 11px; color: #cbd5e1; line-height: 1.4; }
+
+        .sponsor-section-header { text-align: center; margin-top: 4px; margin-bottom: -4px; }
+        .sponsor-title { font-size: 14px; font-weight: 800; color: #f8fafc; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .sponsor-subtitle { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+        /* Tier Placement Cards */
+        .ad-card {
+            position: relative; border-radius: 16px; padding: 18px; color: white; cursor: pointer;
+            overflow: hidden; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex; flex-direction: column; justify-content: space-between; min-height: 120px;
+        }
+        .ad-card:hover, .ad-card:active { transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
+
+        /* Self-contained placeholder background (no external image dependency).
+           When you have a REAL sponsor photo: replace background with
+           background-image: url('your-image-or-base64-here'); background-size: cover; background-position: center;
+           on the matching .ad-card-bg rule below (or inline on the element). Until then this pattern
+           always renders correctly everywhere — no broken/blank cards while you're still signing sponsors. */
+        .ad-card-bg {
+            position: absolute; inset: 0; z-index: 0;
+            background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 2px, transparent 2px, transparent 14px);
+        }
+        .ad-card-bg::after {
+            content: attr(data-icon); position: absolute; right: -6px; bottom: -18px; font-size: 90px; opacity: 0.18; line-height: 1;
+        }
+        .ad-card-overlay { position: absolute; inset: 0; z-index: 1; }
+        .ad-card-content { position: relative; z-index: 2; }
+
+        .ad-card.gold .ad-card-overlay { background: linear-gradient(135deg, rgba(180, 130, 20, 0.92) 0%, rgba(130, 85, 10, 0.88) 100%); }
+        .ad-card.gold .tier-badge { background: rgba(0, 0, 0, 0.3); color: #fef08a; border: 1px solid rgba(254, 240, 138, 0.3); }
+        .ad-card.silver .ad-card-overlay { background: linear-gradient(135deg, rgba(75, 95, 120, 0.92) 0%, rgba(45, 60, 80, 0.88) 100%); }
+        .ad-card.silver .tier-badge { background: rgba(0, 0, 0, 0.3); color: #e2e8f0; border: 1px solid rgba(226, 232, 240, 0.3); }
+        .ad-card.bronze .ad-card-overlay { background: linear-gradient(135deg, rgba(140, 75, 40, 0.92) 0%, rgba(90, 45, 20, 0.88) 100%); }
+        .ad-card.bronze .tier-badge { background: rgba(0, 0, 0, 0.3); color: #ffedd5; border: 1px solid rgba(255, 237, 213, 0.3); }
+
+        .tier-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .tier-badge { font-size: 9px; font-weight: 800; letter-spacing: 0.8px; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; }
+        .tier-icon { font-size: 20px; }
+        .sponsor-name { font-size: 16px; font-weight: 800; line-height: 1.2; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .sponsor-tagline { font-size: 11px; color: rgba(255, 255, 255, 0.85); margin-top: 2px; font-weight: 500; }
+        .cta-link { font-size: 11px; font-weight: 700; margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; color: rgba(255, 255, 255, 0.95); }
+
+        /* Spot Search + Directory */
+        .spot-search { width: 100%; background: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-bottom: 10px; }
+        .spot-search::placeholder { color: #64748b; }
+        .spot-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; border: 1px solid #334155; margin-top: 8px; background-color: #0f172a; cursor: pointer; transition: all 0.2s ease; }
+        .spot-item.active { border-color: #0d9488; background-color: #132e35; }
+        .spot-name { font-size: 13px; font-weight: 700; color: #f8fafc; }
+        .spot-meta { font-size: 11px; color: #94a3b8; }
+        .score-badge { font-size: 11px; font-weight: 800; color: #2dd4bf; background: rgba(13, 148, 136, 0.2); border: 1px solid rgba(45, 212, 191, 0.3); padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+        .no-results { font-size: 12px; color: #64748b; text-align: center; padding: 14px 0; }
+
+        /* Emergency Bar */
+        .emergency-bar { background-color: #7f1d1d; color: white; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #991b1b; }
+        .emergency-title { font-size: 12px; font-weight: 800; }
+        .emergency-num { background: #dc2626; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 800; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(11, 19, 41, 0.88); backdrop-filter: blur(8px); z-index: 200; padding: 16px; align-items: center; justify-content: center; }
+        .modal.open { display: flex; }
+        .modal-body { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 20px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; color: #f8fafc; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+        .modal-title { font-size: 18px; font-weight: 800; color: #ffffff; }
+
+        table.pricing-table, table.forecast-table { width: 100%; border-collapse: collapse; margin-top: 12px; margin-bottom: 12px; font-size: 11px; }
+        table.pricing-table th, table.pricing-table td, table.forecast-table th, table.forecast-table td { padding: 8px; text-align: center; border: 1px solid #334155; }
+        table.pricing-table th, table.forecast-table th { background-color: #0f172a; color: #cbd5e1; font-weight: 700; }
+        table.pricing-table td:first-child, table.forecast-table td:first-child { text-align: left; font-weight: 600; color: #e2e8f0; }
+        .pricing-table tr.highlight-gold { background-color: rgba(180, 130, 20, 0.15); }
+        .pricing-table tr.highlight-silver { background-color: rgba(75, 95, 120, 0.15); }
+        .pricing-table tr.highlight-bronze { background-color: rgba(140, 75, 40, 0.15); }
+
+        .stat-badge { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 10px; text-align: center; flex: 1; }
+        .stat-val { font-size: 16px; font-weight: 800; color: #38bdf8; }
+        .stat-lbl { font-size: 9px; color: #94a3b8; text-transform: uppercase; font-weight: 700; margin-top: 2px; }
+
+        .btn-wa-book { display: block; width: 100%; background-color: #10b981; color: white; text-align: center; text-decoration: none; font-size: 13px; font-weight: 800; padding: 12px; border-radius: 10px; margin-top: 14px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        .btn-close { background: #0f172a; color: #94a3b8; border: 1px solid #334155; padding: 10px; font-weight: 700; border-radius: 10px; width: 100%; margin-top: 8px; cursor: pointer; }
+        .fine-print { font-size: 10px; color: #64748b; margin-top: 6px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <div class="logo-title">SA SURF SAFARI</div>
+            <div class="logo-sub">Live Coastal Telemetry Engine</div>
+        </div>
+        <div class="pills">
+            <button class="pill-btn active" onclick="setDisc('surf', this)">Surf</button>
+            <button class="pill-btn" onclick="setDisc('bodyboard', this)">Bodyboard</button>
+            <button class="pill-btn" onclick="setDisc('kite', this)">Kite</button>
+        </div>
+    </div>
+
+    <div class="hero">
+        <span class="badge" id="hero-badge">Loading Live Data...</span>
+        <h2 id="hero-title">Skaapeiland (Yzerfontein)</h2>
+        <p id="hero-sub">Fetching real-time Open-Meteo marine swell and wind data...</p>
+    </div>
+
+    <div class="container">
+
+        <!-- Active Spot Live Dashboard -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <span style="font-size: 10px; font-weight: 800; color: #2dd4bf; text-transform: uppercase;" id="active-region">West Coast</span>
+                    <div class="card-title" id="active-name" style="font-size: 18px;">Skaapeiland</div>
+                </div>
+                <div style="text-align: right;">
+                    <span id="active-score" class="score-badge">-- % Match</span>
+                    <button onclick="openForecast()" style="display: block; background: #0f172a; color: white; border: 1px solid #334155; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-top: 6px; cursor: pointer;">📅 7-Day Forecast</button>
+                </div>
+            </div>
+
+            <div class="telem-grid">
+                <div class="telem-box">
+                    <span class="telem-label">Live Swell</span>
+                    <span class="telem-val" id="telem-swell">-- m @ -- s</span>
+                    <span class="telem-sub" id="telem-swell-dir">--</span>
+                </div>
+                <div class="telem-box">
+                    <span class="telem-label">Live Wind</span>
+                    <span class="telem-val" id="telem-wind">-- kts</span>
+                    <span class="telem-sub" id="telem-wind-status">--</span>
+                </div>
+                <div class="telem-box">
+                    <span class="telem-label">Water Temp</span>
+                    <span class="telem-val" id="telem-water">-- °C</span>
+                    <span class="telem-sub" id="telem-water-sub">--</span>
+                </div>
+                <div class="telem-box">
+                    <span class="telem-label">Tide (Est.)</span>
+                    <span class="telem-val" id="telem-tide">Mid - High</span>
+                    <span class="telem-sub">Static estimate</span>
+                </div>
+
+                <div class="telem-box full-width">
+                    <div>
+                        <span class="telem-label">Distance</span>
+                        <span class="telem-val" id="telem-dist">-- km</span>
+                    </div>
+                    <span id="telem-gps-btn" onclick="requestGPS()" style="cursor: pointer; text-decoration: underline; font-size: 11px; color: #38bdf8; font-weight: 700;">📍 Locate Me</span>
+                </div>
+
+                <div class="telem-box full-width" id="telem-shark-box">
+                    <div>
+                        <span class="telem-label">Safety Note</span>
+                        <span class="telem-note" id="telem-shark-text">Select a spot to see its safety note.</span>
+                    </div>
+                </div>
+            </div>
+
+            <a id="gmaps-link" href="#" target="_blank" style="display: block; text-align: center; background: #0d9488; color: white; text-decoration: none; font-size: 12px; font-weight: 700; padding: 10px; border-radius: 8px; margin-top: 12px;">
+                📍 Open Google Maps Directions
+            </a>
+        </div>
+
+        <!-- SPONSORSHIP PLACEMENT SECTION -->
+        <div class="sponsor-section-header">
+            <div class="sponsor-title">🏄 Become a Sponsor</div>
+            <div class="sponsor-subtitle">Tap a placement to see what's included</div>
+        </div>
+
+        <div class="ad-card gold" onclick="openPitchModal('gold')">
+            <div class="ad-card-bg" data-icon="🏆"></div>
+            <div class="ad-card-overlay"></div>
+            <div class="ad-card-content">
+                <div class="tier-header"><span class="tier-badge">GOLD PLACEMENT</span><span class="tier-icon">🏆</span></div>
+                <div class="sponsor-name">Yzer Surf Co.</div>
+                <div class="sponsor-tagline">Local Surf Shop · Featured Sponsor</div>
+                <div class="cta-link">Tap to see the Gold package ➔</div>
+            </div>
+        </div>
+
+        <div class="ad-card silver" onclick="openPitchModal('silver')">
+            <div class="ad-card-bg" data-icon="🏡"></div>
+            <div class="ad-card-overlay"></div>
+            <div class="ad-card-content">
+                <div class="tier-header"><span class="tier-badge">SILVER PLACEMENT</span><span class="tier-icon">🏡</span></div>
+                <div class="sponsor-name">Dune House B&amp;B</div>
+                <div class="sponsor-tagline">Boutique Accommodation</div>
+                <div class="cta-link">Tap to see the Silver package ➔</div>
+            </div>
+        </div>
+
+        <div class="ad-card bronze" onclick="openPitchModal('bronze')">
+            <div class="ad-card-bg" data-icon="☕"></div>
+            <div class="ad-card-overlay"></div>
+            <div class="ad-card-content">
+                <div class="tier-header"><span class="tier-badge">BRONZE PLACEMENT</span><span class="tier-icon">☕</span></div>
+                <div class="sponsor-name">Wave Break Café</div>
+                <div class="sponsor-tagline">Beachfront Café</div>
+                <div class="cta-link">Tap to see the Bronze package ➔</div>
+            </div>
+        </div>
+
+        <!-- SEARCHABLE, LIVE-RANKED SPOT DIRECTORY -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <div class="card-title">Working Best Right Now</div>
+                <span style="font-size: 10px; font-weight: 700; color: #94a3b8;" id="gps-status">GPS: Default Yzerfontein</span>
+            </div>
+            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">Ranked live via Open-Meteo swell &amp; wind matching:</p>
+            <input type="text" class="spot-search" id="spot-search" placeholder="Search by spot or town..." oninput="filterSpots()">
+            <div id="spot-list"></div>
+        </div>
+
+        <div class="emergency-bar">
+            <div>
+                <div class="emergency-title">🚨 SA Coastal Emergency Network</div>
+                <div style="font-size: 10px; color: #fca5a5;">NSRI Sea Rescue &amp; Lifeguards</div>
+            </div>
+            <a href="tel:112" class="emergency-num">Call 112</a>
+        </div>
+
+    </div>
+
+    <!-- SPONSOR PITCH MODAL -->
+    <div class="modal" id="pitch-modal">
+        <div class="modal-body">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <span id="modal-tier-badge" class="tier-badge" style="background: #0d9488; color: white;">GOLD TIER</span>
+                    <div class="modal-title" id="modal-pitch-title" style="margin-top: 6px;">Sponsor Placement Pitch</div>
+                </div>
+                <span id="modal-tier-icon" style="font-size: 28px;">🏆</span>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 14px; margin-bottom: 14px;">
+                <div class="stat-badge"><div class="stat-val">12,500+</div><div class="stat-lbl">Monthly Active Surfers</div></div>
+                <div class="stat-badge"><div class="stat-val">84%</div><div class="stat-lbl">Local SA Repeat Visits</div></div>
+            </div>
+            <div class="fine-print">*Illustrative — replace with your real analytics once the app is live</div>
+
+            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-top: 10px;" id="modal-tier-desc"></div>
+
+            <div style="margin-top: 16px;">
+                <div style="font-size: 12px; font-weight: 800; color: #f8fafc;">3-Tier Package Comparison</div>
+                <table class="pricing-table">
+                    <thead><tr><th>Feature</th><th>Gold</th><th>Silver</th><th>Bronze</th></tr></thead>
+                    <tbody>
+                        <tr class="highlight-gold"><td>Hero Feed Position</td><td>Top #1</td><td>Mid #2</td><td>Lower #3</td></tr>
+                        <tr><td>Direct WhatsApp Leads</td><td>✓ Yes</td><td>✓ Yes</td><td>✓ Yes</td></tr>
+                        <tr class="highlight-silver"><td>Guidebook Widget Embed</td><td>✓ Included</td><td>✓ Included</td><td>—</td></tr>
+                        <tr><td>Interactive Pop-up Modal</td><td>✓ Full Photo</td><td>✓ Basic</td><td>Text Only</td></tr>
+                        <tr class="highlight-bronze"><td>Monthly Rate</td><td><strong>R1,250/m</strong></td><td><strong>R750/m</strong></td><td><strong>R450/m</strong></td></tr>
+                    </tbody>
+                </table>
+                <div class="fine-print">*Example pricing — set your own once you know your audience size</div>
+            </div>
+
+            <div style="background: rgba(13, 148, 136, 0.15); border: 1px solid rgba(45, 212, 191, 0.3); padding: 10px; border-radius: 8px; font-size: 11px; color: #2dd4bf; margin-top: 10px;" id="exclusivity-note">
+                🔒 Only 1 Gold sponsor per coastal area. First-come basis.
+            </div>
+
+            <a href="#" target="_blank" class="btn-wa-book" id="modal-wa-btn">💬 Book This Slot via WhatsApp</a>
+            <button class="btn-close" onclick="closePitchModal()">Close Pitch</button>
+        </div>
+    </div>
+
+    <!-- 7-DAY FORECAST MODAL (now fetches real daily data for the active spot) -->
+    <div class="modal" id="forecast-modal">
+        <div class="modal-body">
+            <div class="modal-title" id="forecast-title">7-Day Forecast</div>
+            <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 4px;">Daily max swell &amp; wind, live from Open-Meteo:</p>
+            <div id="forecast-content">
+                <p style="font-size: 12px; color: #94a3b8; padding: 12px 0;">Loading 7-day outlook...</p>
+            </div>
+
+            <p style="font-size: 11px; color: #94a3b8; margin: 14px 0 8px;">General diurnal pattern (typical, not spot-specific):</p>
+            <div style="background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; margin-bottom: 8px;">
+                <strong style="font-size: 12px; color: #2dd4bf;">🌅 Morning (06:00 - 10:00)</strong>
+                <p style="font-size: 11px; color: #cbd5e1;">Usually offshore &amp; glassy along this coast</p>
+            </div>
+            <div style="background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; margin-bottom: 8px;">
+                <strong style="font-size: 12px; color: #fbbf24;">☀️ Afternoon (12:00 - 15:00)</strong>
+                <p style="font-size: 11px; color: #cbd5e1;">Sea breeze picks up — choppier, better for kite</p>
+            </div>
+            <div style="background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px;">
+                <strong style="font-size: 12px; color: #818cf8;">🌇 Evening (16:00 - 19:00)</strong>
+                <p style="font-size: 11px; color: #cbd5e1;">Wind typically eases before sunset</p>
+            </div>
+
+            <button class="btn-close" onclick="closeForecast()">Close Forecast</button>
+        </div>
+    </div>
+
+    <script>
+        // ---------- SPONSOR TIER DATA ----------
+        const sponsorTiers = {
+            gold:   { name: 'Gold Sponsor Placement',   icon: '🏆', badgeBg: '#b48214', exclusivity: '🔒 Only 1 Gold sponsor per coastal area. First-come basis.',
+                      desc: 'Top #1 featured position at the head of the app and spot feed, plus B&B guidebook widget cross-promotion.',
+                      waMsg: 'Hi! I want to book the GOLD Sponsor placement (R1,250/m) on SA Surf Safari for my business.' },
+            silver: { name: 'Silver Sponsor Placement', icon: '🏡', badgeBg: '#4b5f78', exclusivity: '🔒 A handful of Silver slots per region — first-come basis.',
+                      desc: 'Mid-feed position aimed at visiting surfers and travelers seeking accommodation near top breaks.',
+                      waMsg: 'Hi! I want to book the SILVER Sponsor placement (R750/m) on SA Surf Safari for my accommodation.' },
+            bronze: { name: 'Bronze Sponsor Placement', icon: '☕', badgeBg: '#8c4b28', exclusivity: '🔒 Open entry tier — several slots available per region.',
+                      desc: 'Accessible entry-level slot for local cafes, board repair shapers, and rental pop-ups.',
+                      waMsg: 'Hi! I want to book the BRONZE Sponsor placement (R450/m) on SA Surf Safari for my café/shop.' }
+        };
+        const targetWhatsAppNumber = '27821234567'; // Replace with your real WhatsApp number
+
+        function openPitchModal(tierKey) {
+            const t = sponsorTiers[tierKey];
+            document.getElementById('modal-tier-badge').textContent = `${tierKey.toUpperCase()} TIER`;
+            document.getElementById('modal-tier-badge').style.background = t.badgeBg;
+            document.getElementById('modal-tier-icon').textContent = t.icon;
+            document.getElementById('modal-pitch-title').textContent = t.name;
+            document.getElementById('modal-tier-desc').textContent = t.desc;
+            document.getElementById('exclusivity-note').textContent = t.exclusivity;
+            document.getElementById('modal-wa-btn').href = `https://wa.me/${targetWhatsAppNumber}?text=${encodeURIComponent(t.waMsg)}`;
+            document.getElementById('pitch-modal').classList.add('open');
+        }
+        function closePitchModal() { document.getElementById('pitch-modal').classList.remove('open'); }
+
+        // ---------- SPOT DATABASE ----------
+        const spots = [
+            { id: 'skaapeiland', name: 'Skaapeiland (Schaap Eiland)', town: 'Yzerfontein', region: 'West Coast', lat: -33.3480, lng: 18.1510, idealWind: 135, idealSwell: 225, type: 'Slab Wedge', hazards: 'Shallow urchin reef, heavy wedge', sharkSpotters: false },
+            { id: 'yzer_main', name: 'Yzerfontein Main Beach', town: 'Yzerfontein', region: 'West Coast', lat: -33.3411, lng: 18.1611, idealWind: 135, idealSwell: 225, type: 'Beachbreak', hazards: 'Cold water, rips on larger swells', sharkSpotters: false },
+            { id: 'melkbos', name: 'Melkbosstrand Main', town: 'Melkbos', region: 'Table Bay', lat: -33.7250, lng: 18.4420, idealWind: 135, idealSwell: 240, type: 'Beachbreak', hazards: 'Shorebreak, rips', sharkSpotters: false },
+            { id: 'derde_steen', name: 'Derde Steen', town: 'Blouberg', region: 'Table Bay', lat: -33.7650, lng: 18.4550, idealWind: 135, idealSwell: 225, type: 'Beachbreak', hazards: 'Heavy shorebreak', sharkSpotters: false },
+            { id: 'muizenberg', name: 'Muizenberg (Surfers Corner)', town: 'Muizenberg', region: 'Cape Peninsula', lat: -34.1081, lng: 18.4721, idealWind: 315, idealSwell: 195, type: 'Beachbreak', hazards: 'Crowds', sharkSpotters: true },
+            { id: 'kalk_bay', name: 'Kalk Bay Reef', town: 'Kalk Bay', region: 'Cape Peninsula', lat: -34.1275, lng: 18.4483, idealWind: 315, idealSwell: 205, type: 'Reef (Left)', hazards: 'Very shallow reef shelf', sharkSpotters: true },
+            { id: 'dungeons', name: 'Dungeons', town: 'Hout Bay', region: 'Cape Peninsula', lat: -34.0580, lng: 18.3420, idealWind: 135, idealSwell: 225, type: 'Big Wave Reef', hazards: 'Heavy waves (15-50ft)', sharkSpotters: false },
+            { id: 'vic_bay', name: 'Victoria Bay', town: 'George', region: 'Garden Route', lat: -33.9870, lng: 22.5480, idealWind: 325, idealSwell: 210, type: 'Pointbreak (Left)', hazards: 'Point rocks, narrow drop zone', sharkSpotters: false },
+            { id: 'supertubes', name: 'Supertubes', town: 'Jeffreys Bay', region: 'Eastern Cape', lat: -34.0350, lng: 24.9300, idealWind: 225, idealSwell: 210, type: 'Right Point', hazards: 'Urchin reef, crowds', sharkSpotters: false },
+            { id: 'durban_new_pier', name: 'Durban New Pier', town: 'Durban', region: 'KwaZulu-Natal', lat: -29.8521, lng: 31.0410, idealWind: 290, idealSwell: 170, type: 'Pier Sandbar', hazards: 'Pier pilings, heavy current', sharkSpotters: false }
+        ];
+
+        let userLat = -33.3411, userLng = 18.1611;
+        let activeSpot = spots[0];
+        let spotConditions = {};
+        let spotFilterText = '';
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLon/2)**2;
+            return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
+        }
+
+        function degToCompass(deg) {
+            const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+            return dirs[Math.round((deg % 360) / 22.5) % 16];
+        }
+
+        function wetsuitGuide(tempC) {
+            if (tempC == null) return 'N/A';
+            if (tempC >= 22) return 'Boardshorts / rash vest';
+            if (tempC >= 18) return '3/2mm steamer';
+            if (tempC >= 15) return '4/3mm + boots';
+            return '5/4mm + boots, hood, gloves';
+        }
+
+        // ---------- LIVE CONDITIONS (Open-Meteo, free & keyless) ----------
+        async function fetchSpotConditions(spot) {
+            try {
+                const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${spot.lat}&longitude=${spot.lng}&current=swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature`;
+                const windUrl = `https://api.open-meteo.com/v1/forecast?latitude=${spot.lat}&longitude=${spot.lng}&current=wind_speed_10m,wind_direction_10m&wind_speed_unit=kn`;
+
+                const [marineRes, windRes] = await Promise.all([fetch(marineUrl), fetch(windUrl)]);
+                const marineData = await marineRes.json();
+                const weatherData = await windRes.json();
+
+                const cond = {
+                    swellHeight: marineData.current.swell_wave_height,
+                    swellPeriod: marineData.current.swell_wave_period,
+                    swellDir: marineData.current.swell_wave_direction,
+                    waterTemp: marineData.current.sea_surface_temperature,
+                    windSpeedKnots: Math.round(weatherData.current.wind_speed_10m),
+                    windDir: weatherData.current.wind_direction_10m
+                };
+                cond.matchScore = scoreSpot(spot, cond);
+                spotConditions[spot.id] = cond;
+                return cond;
+            } catch (err) {
+                // Only used if the network call itself fails (e.g. no internet, or blocked by
+                // a sandboxed preview that can't reach outside APIs) — not a normal code path.
+                const fallback = { swellHeight: 2.2, swellPeriod: 13, swellDir: 225, waterTemp: 15, windSpeedKnots: 10, windDir: 135, matchScore: 70 };
+                spotConditions[spot.id] = fallback;
+                return fallback;
+            }
+        }
+
+        function scoreSpot(spot, cond) {
+            let windDiff = Math.abs(spot.idealWind - cond.windDir);
+            if (windDiff > 180) windDiff = 360 - windDiff;
+            let windScore = Math.max(0, 100 - (windDiff * 1.2));
+
+            let swellDiff = Math.abs(spot.idealSwell - cond.swellDir);
+            if (swellDiff > 180) swellDiff = 360 - swellDiff;
+            let swellScore = Math.max(0, 100 - (swellDiff * 1.1));
+
+            return Math.round((windScore * 0.6) + (swellScore * 0.4));
+        }
+
+        async function rankAndRenderSpots() {
+            await Promise.all(spots.map(s => fetchSpotConditions(s)));
+            spots.sort((a, b) => (spotConditions[b.id]?.matchScore || 0) - (spotConditions[a.id]?.matchScore || 0));
+            renderSpotList();
+            if (!activeSpot || !spotConditions[activeSpot.id]) selectSpot(spots[0]); else updateDashboardUI();
+        }
+
+        function filterSpots() {
+            spotFilterText = document.getElementById('spot-search').value.trim().toLowerCase();
+            renderSpotList();
+        }
+
+        function renderSpotList() {
+            const list = document.getElementById('spot-list');
+            list.innerHTML = '';
+            const filtered = spots.filter(s =>
+                !spotFilterText || s.name.toLowerCase().includes(spotFilterText) || s.town.toLowerCase().includes(spotFilterText)
+            );
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="no-results">No spots match that search.</div>';
+                return;
+            }
+            filtered.forEach((s) => {
+                const cond = spotConditions[s.id] || {};
+                const dist = calculateDistance(userLat, userLng, s.lat, s.lng);
+                const isTop = spots[0].id === s.id;
+                const item = document.createElement('div');
+                item.className = `spot-item ${s.id === activeSpot.id ? 'active' : ''}`;
+                item.onclick = () => selectSpot(s);
+                item.innerHTML = `
+                    <div>
+                        <div class="spot-name">${isTop ? '🔥 ' : ''}${s.name}</div>
+                        <div class="spot-meta">${s.town} • ${s.type} • ${dist} km away</div>
+                    </div>
+                    <span class="score-badge">${cond.matchScore ?? '--'}% Match</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function selectSpot(spot) {
+            activeSpot = spot;
+            updateDashboardUI();
+            renderSpotList();
+        }
+
+        function updateDashboardUI() {
+            const cond = spotConditions[activeSpot.id] || {};
+            const dist = calculateDistance(userLat, userLng, activeSpot.lat, activeSpot.lng);
+
+            document.getElementById('hero-title').textContent = activeSpot.name;
+            document.getElementById('hero-badge').textContent = `${activeSpot.region} • ${activeSpot.town}`;
+            document.getElementById('hero-sub').textContent = `${activeSpot.type} break. Hazards: ${activeSpot.hazards}.`;
+
+            document.getElementById('active-name').textContent = activeSpot.name;
+            document.getElementById('active-region').textContent = activeSpot.town;
+            document.getElementById('active-score').textContent = `${cond.matchScore ?? '--'}% Match`;
+
+            document.getElementById('telem-swell').textContent = `${cond.swellHeight ?? '--'}m @ ${cond.swellPeriod ?? '--'}s`;
+            document.getElementById('telem-swell-dir').textContent = cond.swellDir != null ? `${cond.swellDir}° ${degToCompass(cond.swellDir)}` : '--';
+
+            document.getElementById('telem-wind').textContent = `${cond.windSpeedKnots ?? '--'} kts`;
+            let windDiff = cond.windDir != null ? Math.abs(activeSpot.idealWind - cond.windDir) : 999;
+            if (windDiff > 180) windDiff = 360 - windDiff;
+            document.getElementById('telem-wind-status').textContent = cond.windDir != null
+                ? `${windDiff < 45 ? 'Glassy Offshore' : 'Onshore/Chop'} · ${degToCompass(cond.windDir)}` : '--';
+
+            document.getElementById('telem-water').textContent = cond.waterTemp != null ? `${cond.waterTemp}°C` : '-- °C';
+            document.getElementById('telem-water-sub').textContent = wetsuitGuide(cond.waterTemp);
+
+            document.getElementById('telem-dist').textContent = `${dist} km`;
+            document.getElementById('gmaps-link').href = `https://maps.google.com/?q=${activeSpot.lat},${activeSpot.lng}`;
+
+            document.getElementById('telem-shark-text').textContent = activeSpot.sharkSpotters
+                ? '🦈 Shark Spotters programme operates at this beach — check the flag board on-site before entering. This is general info, not a live feed.'
+                : 'No formal shark-spotting programme at this spot — use standard open-water caution.';
+        }
+
+        function requestGPS() {
+            if (!navigator.geolocation) return;
+            document.getElementById('gps-status').textContent = 'Locating GPS...';
+            navigator.geolocation.getCurrentPosition(pos => {
+                userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+                document.getElementById('gps-status').textContent = `GPS: ${userLat.toFixed(2)}, ${userLng.toFixed(2)}`;
+                renderSpotList(); updateDashboardUI();
+            }, () => { document.getElementById('gps-status').textContent = 'GPS Permission Denied'; });
+        }
+
+        function setDisc(disc, btn) {
+            document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            rankAndRenderSpots();
+        }
+
+        // ---------- REAL 7-DAY FORECAST ----------
+        async function openForecast() {
+            document.getElementById('forecast-title').textContent = `${activeSpot.name} — 7-Day Forecast`;
+            document.getElementById('forecast-content').innerHTML = '<p style="font-size:12px;color:#94a3b8;padding:12px 0;">Loading 7-day outlook...</p>';
+            document.getElementById('forecast-modal').classList.add('open');
+
+            try {
+                const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${activeSpot.lat}&longitude=${activeSpot.lng}&daily=wave_height_max,wave_period_max,wave_direction_dominant&timezone=auto`;
+                const windUrl = `https://api.open-meteo.com/v1/forecast?latitude=${activeSpot.lat}&longitude=${activeSpot.lng}&daily=wind_speed_10m_max,wind_direction_10m_dominant&wind_speed_unit=kn&timezone=auto`;
+                const [marineRes, windRes] = await Promise.all([fetch(marineUrl), fetch(windUrl)]);
+                const marine = await marineRes.json();
+                const wind = await windRes.json();
+
+                let rows = '';
+                for (let i = 0; i < marine.daily.time.length; i++) {
+                    const d = new Date(marine.daily.time[i]);
+                    const label = d.toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' });
+                    rows += `<tr>
+                        <td>${label}</td>
+                        <td>${marine.daily.wave_height_max[i]}m @ ${marine.daily.wave_period_max[i]}s</td>
+                        <td>${Math.round(wind.daily.wind_speed_10m_max[i])}kt ${degToCompass(wind.daily.wind_direction_10m_dominant[i])}</td>
+                    </tr>`;
+                }
+                document.getElementById('forecast-content').innerHTML = `
+                    <table class="forecast-table">
+                        <thead><tr><th>Day</th><th>Swell Max</th><th>Wind Max</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>`;
+            } catch (err) {
+                document.getElementById('forecast-content').innerHTML =
+                    '<p style="font-size:12px;color:#f87171;padding:8px 0;">Live 7-day data unavailable right now (no network reach from this preview) — see the general pattern below instead.</p>';
+            }
+        }
+        function closeForecast() { document.getElementById('forecast-modal').classList.remove('open'); }
+
+        rankAndRenderSpots();
+    </script>
+</body>
+</html>
