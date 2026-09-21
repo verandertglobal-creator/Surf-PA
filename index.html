@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SA SURF SAFARI — South Africa's Water Sports Companion</title>
+    <title>SURF PA — South Africa's Water Sports Companion</title>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -54,11 +54,6 @@
         }
         .ad-card:hover, .ad-card:active { transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
 
-        /* Self-contained placeholder background (no external image dependency).
-           When you have a REAL sponsor photo: replace background with
-           background-image: url('your-image-or-base64-here'); background-size: cover; background-position: center;
-           on the matching .ad-card-bg rule below (or inline on the element). Until then this pattern
-           always renders correctly everywhere — no broken/blank cards while you're still signing sponsors. */
         .ad-card-bg {
             position: absolute; inset: 0; z-index: 0;
             background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 2px, transparent 2px, transparent 14px);
@@ -124,7 +119,7 @@
 
     <div class="header">
         <div>
-            <div class="logo-title">SA SURF SAFARI</div>
+            <div class="logo-title">SURF PA</div>
             <div class="logo-sub">Live Coastal Telemetry Engine</div>
         </div>
         <div class="pills">
@@ -301,7 +296,7 @@
         </div>
     </div>
 
-    <!-- 7-DAY FORECAST MODAL (now fetches real daily data for the active spot) -->
+    <!-- 7-DAY FORECAST MODAL -->
     <div class="modal" id="forecast-modal">
         <div class="modal-body">
             <div class="modal-title" id="forecast-title">7-Day Forecast</div>
@@ -333,13 +328,13 @@
         const sponsorTiers = {
             gold:   { name: 'Gold Sponsor Placement',   icon: '🏆', badgeBg: '#b48214', exclusivity: '🔒 Only 1 Gold sponsor per coastal area. First-come basis.',
                       desc: 'Top #1 featured position at the head of the app and spot feed, plus B&B guidebook widget cross-promotion.',
-                      waMsg: 'Hi! I want to book the GOLD Sponsor placement (R1,250/m) on SA Surf Safari for my business.' },
+                      waMsg: 'Hi! I want to book the GOLD Sponsor placement (R1,250/m) on SURF PA for my business.' },
             silver: { name: 'Silver Sponsor Placement', icon: '🏡', badgeBg: '#4b5f78', exclusivity: '🔒 A handful of Silver slots per region — first-come basis.',
                       desc: 'Mid-feed position aimed at visiting surfers and travelers seeking accommodation near top breaks.',
-                      waMsg: 'Hi! I want to book the SILVER Sponsor placement (R750/m) on SA Surf Safari for my accommodation.' },
+                      waMsg: 'Hi! I want to book the SILVER Sponsor placement (R750/m) on SURF PA for my accommodation.' },
             bronze: { name: 'Bronze Sponsor Placement', icon: '☕', badgeBg: '#8c4b28', exclusivity: '🔒 Open entry tier — several slots available per region.',
                       desc: 'Accessible entry-level slot for local cafes, board repair shapers, and rental pop-ups.',
-                      waMsg: 'Hi! I want to book the BRONZE Sponsor placement (R450/m) on SA Surf Safari for my café/shop.' }
+                      waMsg: 'Hi! I want to book the BRONZE Sponsor placement (R450/m) on SURF PA for my café/shop.' }
         };
         const targetWhatsAppNumber = '27821234567'; // Replace with your real WhatsApp number
 
@@ -417,8 +412,6 @@
                 spotConditions[spot.id] = cond;
                 return cond;
             } catch (err) {
-                // Only used if the network call itself fails (e.g. no internet, or blocked by
-                // a sandboxed preview that can't reach outside APIs) — not a normal code path.
                 const fallback = { swellHeight: 2.2, swellPeriod: 13, swellDir: 225, waterTemp: 15, windSpeedKnots: 10, windDir: 135, matchScore: 70 };
                 spotConditions[spot.id] = fallback;
                 return fallback;
